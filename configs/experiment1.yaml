@@ -1,0 +1,90 @@
+models:
+  - ultravox
+  - qwen2audio
+  - llava
+
+text_baseline: llama
+
+# Datasets per modality
+datasets:
+  speech:
+    librispeech:
+      split: "test"
+      max_samples: 2620
+    cremad:
+      data_dir: "data/raw/CREMA-D"
+      max_samples: null  # use all 7442
+    esc50:
+      data_dir: "data/raw/ESC-50"
+      max_samples: null  # use all 2000
+    voxceleb1:
+      data_dir: "data/raw/VoxCeleb1"
+      n_speakers: 40
+      samples_per_speaker: 100
+      max_samples: 4000
+  vision:
+    coco:
+      data_dir: "data/raw/COCO"
+      split: "val2017"
+      max_samples: 5000
+    gqa:
+      data_dir: "data/raw/GQA"
+      split: "val"
+      max_samples: 5000
+
+# Extraction settings
+extraction:
+  batch_size_speech: 2
+  batch_size_vision: 4
+  pool_strategy: "mean"  # mean pool over sequence dim
+  dtype: "float16"
+  output_dir: "data/representations"
+  flush_every: 100
+
+# Hook points (logical names — actual paths come from model registry)
+hook_points:
+  - encoder_output
+  - adapter_output
+  - llm_hidden_16
+  - llm_final
+
+# Probing settings
+probing:
+  type: "linear"  # logistic regression
+  lr: 1.0e-3
+  epochs: 100
+  batch_size: 256
+  weight_decay: 1.0e-4
+  optimizer: "adam"
+  normalize: "zscore"
+  train_ratio: 0.8
+  n_seeds: 5
+  info_types:
+    - lexical      # transcript words/phonemes
+    - emotion      # emotion labels (CREMA-D)
+    - speaker      # speaker identity
+    - acoustic     # sound class (ESC-50)
+
+# Lipschitz estimation
+lipschitz:
+  n_samples: 500
+  gradient_checkpointing: true
+  output_dir: "results/exp1/lipschitz"
+
+# Wasserstein estimation
+wasserstein:
+  n_subsample: 1000
+  pca_dim: 256
+  n_bootstrap: 200
+  output_dir: "results/exp1/wasserstein"
+
+# Per-type analysis
+per_type:
+  output_dir: "results/exp1/per_type"
+
+# Mode alignment
+mode_alignment:
+  output_dir: "results/exp1/mode_alignment"
+
+# Output
+results_dir: "results/exp1"

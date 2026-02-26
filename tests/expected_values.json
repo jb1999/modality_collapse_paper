@@ -1,0 +1,209 @@
+{
+  "_comment": "Expected metric values for regression verification. Tolerances are absolute.",
+
+  "probes": {
+    "ultravox_librispeech": {
+      "description": "Ultravox lexical retention through frozen LLM: (llm_final - chance) / (adapter - chance)",
+      "file": "results/exp1/probes/probe_summary_ultravox_librispeech.csv",
+      "checks": [
+        {
+          "name": "ultravox_lexical_adapter_accuracy",
+          "hook_point": "adapter_output",
+          "info_type": "lexical",
+          "field": "mean_accuracy",
+          "expected": 0.279,
+          "tolerance": 0.02
+        },
+        {
+          "name": "ultravox_lexical_llm_final_accuracy",
+          "hook_point": "llm_final",
+          "info_type": "lexical",
+          "field": "mean_accuracy",
+          "expected": 0.535,
+          "tolerance": 0.03
+        },
+        {
+          "name": "ultravox_speaker_adapter_accuracy",
+          "hook_point": "adapter_output",
+          "info_type": "speaker",
+          "field": "mean_accuracy",
+          "expected": 0.605,
+          "tolerance": 0.03
+        },
+        {
+          "name": "ultravox_lexical_retention_pct",
+          "description": "(llm_final - chance) / (adapter - chance) * 100",
+          "computed": true,
+          "numerator": {"hook_point": "llm_final", "info_type": "lexical", "field": "mean_accuracy", "minus": 0.02},
+          "denominator": {"hook_point": "adapter_output", "info_type": "lexical", "field": "mean_accuracy", "minus": 0.02},
+          "expected": 199,
+          "tolerance": 10
+        }
+      ]
+    },
+    "ultravox_cremad": {
+      "file": "results/exp1/probes/probe_summary_ultravox_cremad.csv",
+      "checks": [
+        {
+          "name": "ultravox_emotion_adapter_accuracy",
+          "hook_point": "adapter_output",
+          "info_type": "emotion",
+          "field": "mean_accuracy",
+          "expected": 0.621,
+          "tolerance": 0.02
+        },
+        {
+          "name": "ultravox_speaker_cd_retention_pct",
+          "computed": true,
+          "numerator": {"hook_point": "llm_final", "info_type": "speaker", "field": "mean_accuracy", "minus": 0.011},
+          "denominator": {"hook_point": "adapter_output", "info_type": "speaker", "field": "mean_accuracy", "minus": 0.011},
+          "expected": 68,
+          "tolerance": 8
+        }
+      ]
+    },
+    "qwen2audio_librispeech": {
+      "file": "results/exp1/probes/probe_summary_qwen2audio_librispeech.csv",
+      "checks": [
+        {
+          "name": "qwen2audio_speaker_adapter_accuracy",
+          "hook_point": "adapter_output",
+          "info_type": "speaker",
+          "field": "mean_accuracy",
+          "expected": 0.961,
+          "tolerance": 0.02
+        },
+        {
+          "name": "qwen2audio_speaker_ls_retention_pct",
+          "computed": true,
+          "numerator": {"hook_point": "llm_final", "info_type": "speaker", "field": "mean_accuracy", "minus": 0.025},
+          "denominator": {"hook_point": "adapter_output", "info_type": "speaker", "field": "mean_accuracy", "minus": 0.025},
+          "expected": 60,
+          "tolerance": 8
+        }
+      ]
+    },
+    "ultravox_emotion_lora_cremad": {
+      "file": "results/exp1/probes/probe_summary_ultravox_emotion_lora_cremad.csv",
+      "checks": [
+        {
+          "name": "lora_emotion_llm_final_accuracy",
+          "hook_point": "llm_final",
+          "info_type": "emotion",
+          "field": "mean_accuracy",
+          "expected": 0.632,
+          "tolerance": 0.03
+        }
+      ]
+    }
+  },
+
+  "lipschitz": {
+    "ultravox_librispeech": {
+      "file": "results/exp1/lipschitz/lipschitz_summary_ultravox_librispeech.json",
+      "checks": [
+        {
+          "name": "L_log_ultravox_ls_mean",
+          "field": "L_log_mean",
+          "expected": 9.08,
+          "tolerance": 1.5
+        },
+        {
+          "name": "L_log_ultravox_ls_median",
+          "field": "L_log_median",
+          "expected": 8.66,
+          "tolerance": 1.5
+        }
+      ]
+    }
+  },
+
+  "causal_ablation": {
+    "prismatic_dinov2_coco": {
+      "file": "results/exp1/causal_ablation/causal_ablation_prismatic_dinov2_coco.json",
+      "checks": [
+        {
+          "name": "prismatic_d_ms_pct_change",
+          "field": "pct_change_ms_all",
+          "expected": -11.11,
+          "tolerance": 3.0
+        },
+        {
+          "name": "prismatic_d_ta_pct_change",
+          "field": "pct_change_ta_matched",
+          "expected": -0.07,
+          "tolerance": 1.0
+        }
+      ]
+    },
+    "ultravox_librispeech": {
+      "file": "results/exp1/causal_ablation/causal_ablation_ultravox_librispeech.json",
+      "checks": [
+        {
+          "name": "ultravox_ms_pct_change",
+          "field": "pct_change_ms_all",
+          "expected": -1.41,
+          "tolerance": 2.0
+        }
+      ]
+    }
+  },
+
+  "mode_alignment": {
+    "ultravox": {
+      "summary_file": "results/exp1/mode_alignment/mode_alignment_ultravox_summary.csv",
+      "results_file": "results/exp1/mode_alignment/mode_alignment_ultravox_results.csv",
+      "checks": [
+        {
+          "name": "ultravox_mode0_alpha",
+          "source": "results",
+          "mode_index": 0,
+          "field": "alignment_score",
+          "expected": 0.00105,
+          "tolerance": 0.01
+        },
+        {
+          "name": "ultravox_n_alpha_gt_0.5",
+          "source": "summary",
+          "field": "n_alpha_gt_0.5",
+          "expected": 89,
+          "tolerance": 5
+        }
+      ]
+    }
+  },
+
+  "ms_swap": {
+    "ultravox_librispeech": {
+      "file": "results/exp1/ms_swap/ms_swap_ultravox_librispeech.json",
+      "checks": [
+        {
+          "name": "ultravox_ms_swap_pct_change",
+          "field": "pct_change_ms",
+          "expected": -32.77,
+          "tolerance": 5.0
+        },
+        {
+          "name": "ultravox_ta_swap_pct_change",
+          "field": "pct_change_ta",
+          "expected": -10.97,
+          "tolerance": 3.0
+        }
+      ]
+    }
+  },
+
+  "gradient_projection": {
+    "ultravox_librispeech": {
+      "file": "results/exp1/gradient_projection/gradient_projection_ultravox_librispeech.json",
+      "checks": [
+        {
+          "name": "gradient_ta_over_ms_ratio",
+          "field": "g_ta_over_g_ms",
+          "expected": 0.943,
+          "tolerance": 0.15
+        }
+      ]
+    }
+  }
+}
